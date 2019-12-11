@@ -18,6 +18,10 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
 		</dependency>
@@ -48,6 +52,25 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>1.8.0</version>
+				<configuration>
+					<from>
+						<image>
+							docker://rozprochy_base
+						</image>
+					</from>
+					<container>
+						<entrypoint>bash</entrypoint>
+						<args>
+							<arg>-c</arg>
+							<arg>bash /wait.sh configuration:8088 &amp;&amp; bash /wait.sh discovery:8088 &amp;&amp; java -cp /app/resources:/app/classes:/app/libs/* pl.edu.agh.distributedsystems.gateway.GatewayApplication</arg>
+						</args>
+					</container>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
