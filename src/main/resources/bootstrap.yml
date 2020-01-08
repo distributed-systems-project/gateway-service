@@ -3,4 +3,12 @@ spring:
     name: gateway-service
   cloud:
     config:
-      uri: http://configuration:8088
+      uri: http://configuration:8080
+
+---
+spring:
+  profiles:
+    dev
+  cloud:
+    config:
+      uri: http://configuration:8080
