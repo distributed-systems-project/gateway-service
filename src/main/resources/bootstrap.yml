@@ -11,4 +11,4 @@ spring:
     dev
   cloud:
     config:
-      uri: http://configuration:8080
+      uri: http://localhost:8080
