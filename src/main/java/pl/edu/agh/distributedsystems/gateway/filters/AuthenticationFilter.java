@@ -17,10 +17,14 @@ public class AuthenticationFilter extends ZuulFilter {
 
     private JwtValidator jwtValidator;
     private JwtRequestHandler requestHandler;
+    private AuthenticationFilterPathEvaluator filterPathEvaluator;
 
-    public AuthenticationFilter(JwtValidator jwtValidator, JwtRequestHandler requestHandler) {
+    public AuthenticationFilter(JwtValidator jwtValidator,
+                                JwtRequestHandler requestHandler,
+                                AuthenticationFilterPathEvaluator filterPathEvaluator) {
         this.jwtValidator = jwtValidator;
         this.requestHandler = requestHandler;
+        this.filterPathEvaluator = filterPathEvaluator;
     }
 
     @Override
@@ -37,11 +41,8 @@ public class AuthenticationFilter extends ZuulFilter {
     public boolean shouldFilter() {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
-        boolean isLoginUri = "/login".equals(request.getRequestURI());
-        boolean isCreateReservationUri = "/reservation/reservations".equals(request.getRequestURI());
-        boolean isPostRequest = "POST".equalsIgnoreCase(request.getMethod());
 
-        return !isLoginUri && (!isCreateReservationUri || !isPostRequest);
+        return filterPathEvaluator.shouldFilter(request);
     }
 
     @Override

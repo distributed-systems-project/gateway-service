@@ -11,7 +11,6 @@ import java.util.Date;
 
 public class JwtCreator {
 
-    private final JwtAuthenticationConfig config = new JwtAuthenticationConfig();
     private final ObjectMapper mapper = new ObjectMapper();
 
     public String createJwt(String principalString) throws IOException {
