@@ -53,18 +53,32 @@ public class AuthenticationFilter extends ZuulFilter {
         if (authHeader != null && !authHeader.isEmpty()) {
             try {
                 EmployeePrincipal principal = jwtValidator.authenticate(authHeader);
-                requestHandler.handleRequest(request, principal);
+                if (requestHandler.isAuthorized(request, principal)) {
+                    context.addZuulRequestHeader("x-principal", "{" +
+                            "\"\": \"" + principal.getEmployeeId() + "\", " +
+                            "\"\": \"" + principal.getHotelId() + "\", " +
+                            "\"\": \"" + principal.getPosition() + "\", " +
+                            "}");
+                } else {
+                    sendForbiddenRequest(context);
+                }
             } catch (Exception e) {
-                rejectRequest(context, e.getMessage());
+                sendUnauthorizedRequest(context, e.getMessage());
             }
         } else {
-            rejectRequest(context, "Missing authentication header");
+            sendUnauthorizedRequest(context, "Missing authentication header");
         }
 
         return null;
     }
 
-    private void rejectRequest(RequestContext context, String message) {
+    private void sendForbiddenRequest(RequestContext context) {
+        context.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
+        context.setResponseBody("{\"message\": \"Forbidden to view this resource\"}");
+        context.setSendZuulResponse(false);
+    }
+
+    private void sendUnauthorizedRequest(RequestContext context, String message) {
         context.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
         context.setResponseBody("{\"message\": \"" + message + "\"}");
         context.setSendZuulResponse(false);
