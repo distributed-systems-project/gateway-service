@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-public class LoginFilter extends ZuulFilter {
+public abstract class LoginFilter extends ZuulFilter {
 
     private JwtCreator jwtCreator;
 
@@ -29,11 +29,7 @@ public class LoginFilter extends ZuulFilter {
     }
 
     @Override
-    public boolean shouldFilter() {
-        RequestContext context = RequestContext.getCurrentContext();
-
-        return context.get("proxy").equals("login") && context.getResponseStatusCode() == 200;
-    }
+    public abstract boolean shouldFilter();
 
     @Override
     public Object run() {
