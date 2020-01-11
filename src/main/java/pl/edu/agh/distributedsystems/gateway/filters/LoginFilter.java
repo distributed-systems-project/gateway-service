@@ -3,15 +3,21 @@ package pl.edu.agh.distributedsystems.gateway.filters;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StreamUtils;
+import pl.edu.agh.distributedsystems.gateway.security.JwtCreator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.zip.GZIPInputStream;
 
 public class LoginFilter extends ZuulFilter {
+
+    private JwtCreator jwtCreator;
+
+    public LoginFilter(JwtCreator jwtCreator) {
+        this.jwtCreator = jwtCreator;
+    }
+
     @Override
     public String filterType() {
         return FilterConstants.POST_TYPE;
@@ -35,8 +41,8 @@ public class LoginFilter extends ZuulFilter {
         try {
             InputStream responseDataStream = context.getResponseDataStream();
             String responseAsString = StreamUtils.copyToString(responseDataStream, Charset.forName("UTF-8"));
-            // Do want you want with your String response
-            context.addZuulResponseHeader("x-auth-token", Base64Utils.encodeToString(responseAsString.getBytes()));
+            String jwt = jwtCreator.createJwt(responseAsString);
+            context.addZuulResponseHeader("x-auth-token", jwt);
         } catch (IOException e) {
             e.printStackTrace();
         }

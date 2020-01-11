@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Bean;
 import pl.edu.agh.distributedsystems.gateway.filters.LoginFilter;
+import pl.edu.agh.distributedsystems.gateway.security.JwtCreator;
 
 @SpringBootApplication
 @EnableZuulProxy
@@ -16,7 +17,7 @@ public class GatewayApplication {
 
 	@Bean
 	public LoginFilter loginFilter() {
-		return new LoginFilter();
+		return new LoginFilter(new JwtCreator());
 	}
 	
 }
