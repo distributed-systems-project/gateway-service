@@ -20,7 +20,7 @@ public class JwtCreator {
 
         return Jwts.builder()
                 .setSubject(principal.getEmployeeId())
-                .claim("authorities", Collections.singletonList(principal.getPosition()))
+                .claim("authority", principal.getPosition())
                 .claim("hotelId", principal.getHotelId())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusSeconds(JwtAuthenticationConfig.getExpiration())))
